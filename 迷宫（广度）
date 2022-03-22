@@ -1,0 +1,103 @@
+#include <iostream>
+#include <queue>
+#include<stack>
+#include<stdio.h>
+#include<malloc.h>
+#include<deque>
+using namespace std;
+int a[1000][1000]; // 1为障碍物，0为可通过路径
+int b[1000][1000]= {0}; // 状态，记录是否被访问过
+int dy[4]= {0,1,0,-1}; //方向
+int dx[4]= {1,0,-1,0};
+int num=0;
+struct point
+{
+    int x;
+    int y;
+    struct point *next;
+};
+deque<point> p;
+
+int main()
+{
+    int n,m;
+    int i,j,k;
+    int x,y,tx,ty;
+    int flag2=0;
+    cin>>n>>m;
+    for(i=0; i<=n+1; i++)
+    {
+        for(j=0; j<=m+1; j++)
+        {
+            a[i][j]=1;
+        }
+    }
+    for(i=1; i<=n; i++) //构建迷宫,n为y,m为x
+    {
+        for(j=1; j<=m; j++)
+        {
+            scanf("%d",&a[i][j]);
+        }
+    }
+    /* for(i=0;i<n+2;i++) //测试扩大后的迷宫
+     {
+         for(j=0;j<m+2;j++)
+         {
+             printf("%d ",a[i][j]);
+         }
+         printf("\n");
+
+     }*/
+    point start;// 默认入口在（1，0），出口在（m,n)
+    start.x=1,start.y=1,start.next=NULL; //初始化
+    p.push_back(start);  //入队列
+    b[start.y][start.x]=1; //入口已经被访问
+    point *temp;
+    point way[2000];
+    while(!p.empty())
+    {
+        temp=&p.front(); //访问队头
+        if(temp->x==m&&temp->y==n)
+        {
+            flag2=1;
+            while(temp != NULL)
+            {
+                way[num].x=temp->x;
+                way[num].y=temp->y ;
+                num++;
+                temp=temp->next;
+            }
+            break;
+        }
+        for(i=0; i<=3; i++)
+        {
+            tx=temp->x+dx[i];
+            ty=temp->y+dy[i];
+            if(a[ty][tx]==0&&b[ty][tx]==0) //将所有符合条件的点都入列
+            {
+                point t;
+                t.x=tx;
+                t.y=ty;
+                t.next=temp; //指向上一个结点数据的指针
+                p.push_back(t);
+                b[ty][tx]=1;
+
+            }
+        }
+        p.pop_front(); //将已经扩展的点的点出队
+
+    }
+    if(flag2==1)
+    {
+
+
+        for(i=num-1; i>=0; i--)
+        {
+            printf("(%d,%d)\n",way[i].y,way[i].x);
+        }
+    }
+    if(flag2==0)
+    {
+        printf("No Path.\n");
+    }
+}
